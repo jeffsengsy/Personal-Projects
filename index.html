@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Will You Be My Valentine? 💌</title>
+
+    <style>
+        :root {
+            --bg1: #fff7e6;
+            --bg2: #ffe8cc;
+            --ink: #2a1f1b;
+            --pink: #e53935;
+            --pink2: #ff6b6b;
+            --cream: #fff5e9;
+            --shadow: 0 18px 55px rgba(92, 58, 45, .18);
+            --radius: 18px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                radial-gradient(circle at 20% 10%, var(--bg2), var(--bg1)),
+                repeating-linear-gradient(45deg, rgba(229, 57, 53, .05) 0 8px, transparent 8px 16px);
+            color: var(--ink);
+            font-family: "Comic Sans MS", "Marker Felt", "Bradley Hand", "Trebuchet MS", ui-sans-serif, system-ui;
+            overflow: hidden;
+        }
+
+        .stage {
+            width: min(920px, 92vw);
+            height: min(560px, 80vh);
+            position: relative;
+            display: grid;
+            place-items: center;
+        }
+
+        /* Floating hearts background */
+        .heart {
+            position: absolute;
+            font-size: 18px;
+            opacity: .25;
+            filter: blur(.2px);
+            animation: floatUp linear infinite;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        @keyframes floatUp {
+            from {
+                transform: translateY(40px);
+            }
+
+            to {
+                transform: translateY(-650px);
+            }
+        }
+
+        /* Envelope */
+        .envelope-wrap {
+            display: grid;
+            place-items: center;
+            gap: 18px;
+            text-align: center;
+            transition: opacity .25s ease, transform .25s ease;
+        }
+
+        .hint {
+            opacity: .85;
+            font-weight: 600;
+        }
+
+        .envelope {
+            width: min(440px, 82vw);
+            height: min(280px, 46vh);
+            position: relative;
+            cursor: pointer;
+            transform: translateZ(0);
+            filter: drop-shadow(var(--shadow));
+            transition: transform .15s ease;
+        }
+
+        .envelope:active {
+            transform: scale(.985);
+        }
+
+        .env-back {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, #ffe1d9, #ffb3b0);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .env-front {
+            position: absolute;
+            inset: 0;
+            border-radius: 14px;
+            background: transparent;
+        }
+
+        /* Triangles */
+        .tri-left {
+            position: absolute;
+            inset: 0;
+            clip-path: polygon(0 0, 50% 52%, 0 100%);
+            background: rgba(255, 255, 255, .35);
+        }
+
+        .tri-right {
+            position: absolute;
+            inset: 0;
+            clip-path: polygon(100% 0, 50% 52%, 100% 100%);
+            background: rgba(255, 255, 255, .25);
+        }
+
+        .tri-bottom {
+            position: absolute;
+            inset: 0;
+            clip-path: polygon(0 100%, 50% 52%, 100% 100%);
+            background: rgba(229, 57, 53, .12);
+        }
+
+        .flap {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            height: 62%;
+            background: linear-gradient(180deg, #fff0e8, #ffe1d9);
+            clip-path: polygon(0 0, 100% 0, 50% 92%);
+            transform-origin: 50% 0%;
+            transform: rotateX(0deg);
+            transition: transform .6s cubic-bezier(.2, .9, .2, 1);
+            border-top-left-radius: 14px;
+            border-top-right-radius: 14px;
+        }
+
+        .seal {
+            position: absolute;
+            left: 50%;
+            top: 56%;
+            transform: translate(-50%, -50%);
+            width: 74px;
+            height: 74px;
+            border-radius: 999px;
+            background: radial-gradient(circle at 30% 30%, #ffb3b0, #e53935);
+            display: grid;
+            place-items: center;
+            color: white;
+            font-size: 30px;
+            box-shadow: 0 10px 25px rgba(229, 57, 53, .35);
+            transition: transform .6s cubic-bezier(.2, .9, .2, 1), opacity .2s ease;
+        }
+
+        /* Open state */
+        .opened .flap {
+            transform: rotateX(180deg);
+        }
+
+        .opened .seal {
+            transform: translate(-50%, -50%) scale(.85);
+            opacity: 0;
+        }
+
+        /* Card */
+        .card {
+            width: min(820px, 92vw);
+            height: min(520px, 78vh);
+            background: rgba(255, 245, 233, .92);
+            border: 2px solid rgba(229, 57, 53, .18);
+            backdrop-filter: blur(8px);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            position: absolute;
+            inset: auto;
+            display: grid;
+            grid-template-columns: 1.1fr .9fr;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(12px) scale(.985);
+            pointer-events: none;
+            transition: opacity .35s ease, transform .35s ease;
+        }
+
+        .card.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .card-left {
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            background: linear-gradient(135deg, rgba(229, 57, 53, .06), rgba(255, 179, 176, .08));
+        }
+
+        .photo {
+            flex: 1;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid rgba(229, 57, 53, .2);
+            background: var(--cream);
+            position: relative;
+        }
+
+        .photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .photo .badge {
+            position: absolute;
+            left: 14px;
+            bottom: 14px;
+            background: rgba(255, 255, 255, .82);
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 14px;
+            border: 1px solid rgba(0, 0, 0, .06);
+        }
+
+        .card-right {
+            padding: 28px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 18px;
+            position: relative;
+        }
+
+        .stamp {
+            position: absolute;
+            right: 18px;
+            top: 16px;
+            border: 2px dashed rgba(229, 57, 53, .5);
+            padding: 6px 10px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 12px;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: #c62828;
+            background: rgba(255, 255, 255, .6);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(28px, 3.3vw, 44px);
+            line-height: 1.05;
+            letter-spacing: -.02em;
+        }
+
+        .sub {
+            margin: 0;
+            font-size: 16px;
+            opacity: .85;
+            line-height: 1.45;
+        }
+
+        .btn-row {
+            position: relative;
+            height: 120px;
+            margin-top: 10px;
+            border-radius: 16px;
+            border: 2px dashed rgba(229, 57, 53, .35);
+            background: rgba(229, 57, 53, .03);
+            overflow: hidden;
+        }
+
+        button {
+            border: 0;
+            border-radius: 999px;
+            padding: 14px 18px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .yes {
+            background: linear-gradient(180deg, #e53935, #c62828);
+            color: white;
+            box-shadow: 0 12px 30px rgba(229, 57, 53, .35);
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .yes:active {
+            transform: translateY(-50%) scale(.98);
+        }
+
+        .no {
+            background: rgba(255, 255, 255, .85);
+            color: #4e2f2f;
+            position: fixed;
+            left: 180px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 2px solid rgba(229, 57, 53, .2);
+            z-index: 5;
+            transition: left .45s ease, top .45s ease, transform .45s ease, opacity .2s ease;
+            will-change: left, top, transform;
+        }
+
+        body:not(.card-ready) .no {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        body.card-ready .no {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .toast {
+            position: absolute;
+            left: 50%;
+            top: 18px;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, .95);
+            border: 2px solid rgba(229, 57, 53, .18);
+            padding: 10px 14px;
+            border-radius: 999px;
+            box-shadow: 0 10px 25px rgba(92, 58, 45, .12);
+            font-weight: 700;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .25s ease, transform .25s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(2px);
+        }
+
+        .final {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            padding: 24px;
+            background: radial-gradient(circle at 30% 20%, rgba(229, 57, 53, .18), rgba(255, 245, 233, .92));
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .35s ease;
+        }
+
+        .final.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .final h2 {
+            margin: 0;
+            font-size: clamp(34px, 4vw, 56px);
+            letter-spacing: -.02em;
+        }
+
+        .final p {
+            margin: 10px 0 0;
+            font-size: 18px;
+            opacity: .9;
+            font-weight: 600;
+        }
+
+        .final .tiny {
+            margin-top: 14px;
+            opacity: .75;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 760px) {
+            .card {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1.05fr .95fr;
+                height: min(620px, 86vh);
+            }
+
+            .btn-row {
+                height: 140px;
+            }
+
+            .yes {
+                left: 14px;
+            }
+
+            .no {
+                left: 160px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="stage" id="stage">
+        <!-- Floating hearts -->
+    </div>
+
+    <div class="envelope-wrap" id="envelopeWrap">
+        <div class="hint">Tap the envelope 💌</div>
+
+        <div class="envelope" id="envelope" aria-label="Open envelope">
+            <div class="env-back">
+                <div class="tri-left"></div>
+                <div class="tri-right"></div>
+                <div class="tri-bottom"></div>
+                <div class="flap"></div>
+                <div class="seal">❤</div>
+            </div>
+            <div class="env-front"></div>
+        </div>
+
+        <div style="opacity:.75;font-weight:600;">From yours truly</div>
+    </div>
+
+    <!-- Valentine card -->
+    <div class="card" id="card">
+        <div class="card-left">
+            <div class="photo">
+                <img src="valentine.jpg" alt="Us 💕" onerror="this.src='https://picsum.photos/800/800?blur=1';" />
+                <div class="badge">💞 You + Me</div>
+            </div>
+        </div>
+
+        <div class="card-right">
+            <div class="stamp">♥</div>
+            <div class="toast" id="toast">Youre saying no 🥲 </div>
+
+            <h1>Will you be my Valentine?</h1>
+            <p class="sub">
+                Please say yes 🥹
+            </p>
+
+            <div class="btn-row" id="arena">
+                <button class="yes" id="yesBtn">Yes </button>
+                <button class="no" id="noBtn">No </button>
+            </div>
+
+            <p class="sub" style="margin-top:6px; font-size:14px; opacity:.7;">
+
+            </p>
+        </div>
+
+        <div class="final" id="final">
+            <div>
+                <h2>Yayyy! </h2>
+                <p>I love you!</p>
+                <div class="tiny">Can't wait to see you! </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ----- Hearts background -----
+        const stage = document.getElementById('stage');
+        const heartChars = ["❤", "💗", "💖", "💘", "💝", "💕", "💞"];
+        for (let i = 0; i < 26; i++) {
+            const h = document.createElement('div');
+            h.className = 'heart';
+            h.textContent = heartChars[Math.floor(Math.random() * heartChars.length)];
+            const left = Math.random() * 100;
+            const size = 14 + Math.random() * 22;
+            const dur = 6 + Math.random() * 10;
+            const delay = Math.random() * -dur; // start staggered
+            h.style.left = left + 'vw';
+            h.style.bottom = (-40 - Math.random() * 240) + 'px';
+            h.style.fontSize = size + 'px';
+            h.style.animationDuration = dur + 's';
+            h.style.animationDelay = delay + 's';
+            stage.appendChild(h);
+        }
+
+        // ----- Envelope open -> show card -----
+        const envelopeWrap = document.getElementById('envelopeWrap');
+        const envelope = document.getElementById('envelope');
+        const card = document.getElementById('card');
+
+        envelope.addEventListener('click', () => {
+            envelope.classList.add('opened');
+            envelopeWrap.style.transform = 'translateY(-6px)';
+            setTimeout(() => {
+                envelopeWrap.style.opacity = '0';
+                envelopeWrap.style.pointerEvents = 'none';
+                card.classList.add('show');
+                document.body.classList.add('card-ready');
+                placeNoButton();
+            }, 550);
+        });
+
+        // ----- Buttons -----
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const arena = document.getElementById('arena');
+        const toast = document.getElementById('toast');
+        const final = document.getElementById('final');
+        document.body.appendChild(noBtn);
+
+        // Utility helpers
+        function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+        function rand(min, max) { return min + Math.random() * (max - min); }
+
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            clearTimeout(showToast._t);
+            showToast._t = setTimeout(() => toast.classList.remove('show'), 850);
+        }
+
+        function moveNoButton(awayFromX, awayFromY) {
+            const rect = {
+                left: 0,
+                top: 0,
+                width: window.innerWidth,
+                height: window.innerHeight
+            };
+            const btnRect = noBtn.getBoundingClientRect();
+
+            const padding = 24;
+            const maxX = rect.width - btnRect.width - padding;
+            const maxY = rect.height - btnRect.height - padding;
+
+            // Current position (relative)
+            const curLeft = parseFloat(getComputedStyle(noBtn).left) || 0;
+            const curTop = parseFloat(getComputedStyle(noBtn).top) || (rect.height / 2);
+
+            // Pick a new position biased away from cursor
+            // Compute cursor position in arena coords
+            const cx = awayFromX - rect.left;
+            const cy = awayFromY - rect.top;
+
+            // Vector away from cursor
+            const dx = curLeft - cx;
+            const dy = curTop - cy;
+
+            // Pick a new spot far from the cursor (avoid corners)
+            const minDist = 140;
+            let nx = curLeft;
+            let ny = curTop;
+            for (let i = 0; i < 12; i++) {
+                const tryX = rand(padding, maxX);
+                const tryY = rand(padding, maxY);
+                const dx2 = tryX - cx;
+                const dy2 = tryY - cy;
+                if (Math.hypot(dx2, dy2) >= minDist) {
+                    nx = tryX;
+                    ny = tryY;
+                    break;
+                }
+            }
+
+            // If still too close, push away from cursor
+            if (Math.hypot(nx - cx, ny - cy) < minDist) {
+                const step = rand(160, 240);
+                nx = curLeft + (dx === 0 ? (Math.random() > .5 ? 1 : -1) : Math.sign(dx)) * step + rand(-40, 40);
+                ny = curTop + (dy === 0 ? (Math.random() > .5 ? 1 : -1) : Math.sign(dy)) * step + rand(-35, 35);
+            }
+
+            nx = clamp(nx, padding, maxX);
+            ny = clamp(ny, padding, maxY);
+
+            noBtn.style.left = nx + 'px';
+            noBtn.style.top = ny + 'px';
+            noBtn.style.transform = 'translate(0,0)'; // reset translateY trick
+        }
+
+        function placeNoButton() {
+            const r = arena.getBoundingClientRect();
+            noBtn.style.left = (r.left + r.width * 0.58) + 'px';
+            noBtn.style.top = (r.top + r.height * 0.50) + 'px';
+            noBtn.style.transform = 'translate(0, -50%)';
+        }
+
+        // Make "No" dodge cursor
+        function dodge(e) {
+            // If close enough, move it
+            const b = noBtn.getBoundingClientRect();
+            const mx = e.clientX, my = e.clientY;
+            const distX = Math.max(b.left - mx, mx - b.right, 0);
+            const distY = Math.max(b.top - my, my - b.bottom, 0);
+            const dist = Math.hypot(distX, distY);
+
+            // Trigger range (bigger = meaner)
+            const trigger = 12;
+
+            if (dist < trigger) {
+                moveNoButton(mx, my);
+                showToast("🥲");
+            }
+        }
+
+        // Desktop: move on mouse move
+        window.addEventListener('mousemove', dodge);
+
+        // Mobile: move on touch start / move
+        window.addEventListener('touchstart', (e) => {
+            const t = e.touches[0];
+            moveNoButton(t.clientX, t.clientY);
+            showToast("Hehe 😌");
+        }, { passive: true });
+        window.addEventListener('touchmove', (e) => {
+            const t = e.touches[0];
+            dodge(t);
+        }, { passive: true });
+
+        // If they somehow click No, still move it away
+        noBtn.addEventListener('mouseenter', (e) => moveNoButton(e.clientX, e.clientY));
+        noBtn.addEventListener('click', (e) => {
+            moveNoButton(e.clientX, e.clientY);
+            showToast("Nice attempt 😭");
+            e.preventDefault();
+            e.stopPropagation();
+        });
+
+        // Yes button
+        yesBtn.addEventListener('click', () => {
+            final.classList.add('show');
+            confettiBurst();
+        });
+
+        // Little confetti (no libraries)
+        function confettiBurst() {
+            const colors = ["#ff4d8d", "#ff85ad", "#ffb3cb", "#ffd1e1", "#ffffff", "#ff2d78"];
+            for (let i = 0; i < 120; i++) {
+                const p = document.createElement('div');
+                p.style.position = 'fixed';
+                p.style.left = (window.innerWidth / 2 + rand(-20, 20)) + 'px';
+                p.style.top = (window.innerHeight / 2 + rand(-20, 20)) + 'px';
+                p.style.width = rand(6, 10) + 'px';
+                p.style.height = rand(6, 12) + 'px';
+                p.style.background = colors[Math.floor(Math.random() * colors.length)];
+                p.style.borderRadius = rand(2, 6) + 'px';
+                p.style.opacity = '0.95';
+                p.style.transform = 'translate(-50%,-50%)';
+                p.style.pointerEvents = 'none';
+                p.style.zIndex = 9999;
+                document.body.appendChild(p);
+
+                const angle = rand(0, Math.PI * 2);
+                const power = rand(140, 520);
+                const vx = Math.cos(angle) * power;
+                const vy = Math.sin(angle) * power - rand(120, 240);
+
+                const start = performance.now();
+                const dur = rand(900, 1400);
+
+                function tick(now) {
+                    const t = (now - start) / dur;
+                    if (t >= 1) {
+                        p.remove();
+                        return;
+                    }
+                    const ease = (u) => 1 - Math.pow(1 - u, 3);
+                    const u = ease(t);
+
+                    const x = vx * u;
+                    const y = vy * u + 420 * u * u; // gravity
+                    p.style.transform = `translate(${x}px, ${y}px) rotate(${u * 720}deg)`;
+                    p.style.opacity = String(1 - t);
+                    requestAnimationFrame(tick);
+                }
+                requestAnimationFrame(tick);
+            }
+        }
+
+        // Initialize "No" position cleanly after layout
+        window.addEventListener('load', () => {
+            placeNoButton();
+        });
+    </script>
+</body>
+
+</html>
